@@ -77,9 +77,12 @@ function leave(el) {
 
   <div class="home">
     <FluidCursor />
+    <div class="bg-word" aria-hidden="true">CRAFT</div>
+
     <!-- 动态显示区 -->
     <!-- タイトル -->
     <section class="dynamic">
+      
       <transition name="collapse-fade" @before-enter="beforeEnter" @enter="enter" @before-leave="beforeLeave"
         @leave="leave">
         <div v-if="activeKey === null" class="hero-text">
@@ -118,23 +121,44 @@ function leave(el) {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  /* 整体留边距 */
   padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+
+  /* 层级参照 */
+  position: relative;
+  z-index: 0;
 }
 
 /* =========
-   Dynamic area takes remaining height
+   FluidCursor（固定底层，不挡交互）
+   ========= */
+:deep(.fluid-layer) {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* =========
+   页面内容层（在 FluidCursor 上面）
+   ========= */
+.dynamic,
+.tabbar {
+  position: relative;
+  z-index: 2;
+}
+
+/* =========
+   Dynamic area
    ========= */
 .dynamic {
   flex: 1;
   min-height: 0;
-  /* 关键：让内部可滚动元素的高度能正确计算 */
   display: flex;
   flex-direction: column;
   padding: 16px 0;
 }
 
-/* hero text（由你的 transition hooks 控制 height/opacity） */
+/* hero text */
 .hero-text {
   width: 100%;
   max-width: 960px;
@@ -152,22 +176,23 @@ function leave(el) {
 .hero-text p {
   margin: 10px 0 0;
   font-size: 1.05rem;
-  opacity: .72;
+  opacity: 0.72;
 }
 
-/* hero image */
+/* =========
+   Hero image
+   ========= */
 .heroMedia {
   max-width: 960px;
   margin: 0 auto;
   padding-top: 12px;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  /* 关键：给容器一个可控占位 */
+
   aspect-ratio: 16 / 9;
-  /* 你按图片比例改：1/1、4/3、3/4 都行 */
   max-height: 320px;
-  /* 上限，避免太高（不是固定高度） */
 }
 
 .heroMedia img {
@@ -176,16 +201,9 @@ function leave(el) {
   border-radius: 18px;
 }
 
-/* compact 时让“占位”也变小（不会留空隙） */
+/* compact：只控制占位，不做 transform */
 .heroMedia.compact {
   max-height: 120px;
-  /* 这是上限，不是死固定 */
-}
-
-
-.heroMedia.compact {
-  transform: scale(.75);
-  opacity: .98;
 }
 
 /* =========
@@ -193,9 +211,7 @@ function leave(el) {
    ========= */
 .panelWrap {
   flex: 1;
-  /* 吃掉 dynamic 中剩余高度 */
   min-height: 0;
-  /* 关键：让 .panel 的 overflow-y 生效 */
   display: flex;
 }
 
@@ -204,7 +220,6 @@ function leave(el) {
   max-width: 960px;
   margin: 0 auto;
 
-  /* 只让这里滚动 */
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -214,28 +229,27 @@ function leave(el) {
   box-sizing: border-box;
 
   border-radius: 18px;
-  border: 1px solid rgba(0, 0, 0, .08);
-  background: rgba(255, 255, 255, .7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.7);
 }
 
-/* 可选：滚动条 */
+/* scrollbar (optional) */
 .panel::-webkit-scrollbar {
   width: 10px;
 }
 
 .panel::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, .18);
+  background: rgba(0, 0, 0, 0.18);
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 
 /* =========
-   Tabbar fixed height & fixed position
+   Tabbar
    ========= */
 .tabbar {
   height: 64px;
-  /* 固定高度 */
   flex: 0 0 64px;
 
   display: flex;
@@ -248,78 +262,56 @@ function leave(el) {
   box-sizing: border-box;
 
   border-radius: 16px;
-  border: 1px solid rgba(0, 0, 0, .08);
-  background: rgba(255, 255, 255, .78);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.78);
   backdrop-filter: blur(10px);
 }
 
-/* tabbar 内按钮（如果 TabButton 根不是 button，这里可能无效） */
 .tabbar button {
   padding: 8px 14px;
   border-radius: 999px;
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, .18);
+  border: 1px solid rgba(0, 0, 0, 0.18);
   cursor: pointer;
 }
 
 .tabbar button.active {
-  border-color: rgba(0, 0, 0, .85);
+  border-color: rgba(0, 0, 0, 0.85);
 }
 
+.bg-word{
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 1;          /* 和 fluid 同层或略上都行 */
+  pointer-events: none;
+
+  font-size: clamp(96px, 22vw, 280px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  white-space: nowrap;
+
+  background: linear-gradient(to bottom,
+    rgba(120,120,120,0.55),
+    rgba(180,180,180,0.18)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  opacity: 0.65;
+}
+
+/* =========
+   Motion safety
+   ========= */
 @media (prefers-reduced-motion: reduce) {
   .heroMedia {
     transition: none;
   }
 }
 
-:deep(.fluid-layer) {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* 内容层放在背景上面 */
-.home {
-  position: relative;
-  /* 让内部 z-index 有参照 */
-  z-index: 0;
-}
-
-.home> :not(.dream-bg):not(.fluid-layer) {
-  position: relative;
-  z-index: 2;
-}
-
-.fluid-layer {
-  pointer-events: none;
-}
-
-/* 动画：慢慢漂移 */
-@keyframes dreamShift {
-  0% {
-    background-position: 0% 20%;
-  }
-
-  50% {
-    background-position: 70% 30%;
-  }
-
-  100% {
-    background-position: 20% 80%;
-  }
-}
-
-.dream-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.10), transparent 40%),
-    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.08), transparent 45%),
-    radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.06), transparent 50%);
-  mix-blend-mode: overlay;
-  opacity: 0.35;
-  filter: blur(2px);
-}
 </style>
+

@@ -8,8 +8,6 @@ import FunSection from './sections/FunSection.vue'
 import ContactSection from './sections/ContactSection.vue'
 import TabButton from '../components/TabButton.vue'
 
-
-
 const activeKey = ref(null)
 
 const tabs = [
@@ -37,15 +35,56 @@ const heroImageUrl = new URL(
 function onClickTab(key) {
   activeKey.value = key
 }
+
+function resetTab() {
+  activeKey.value = null
+}
+
+function beforeEnter(el) {
+  el.style.height = '0'
+  el.style.opacity = '0'
+}
+
+function enter(el) {
+  el.style.transition = 'height .35s ease, opacity .35s ease'
+  el.style.height = el.scrollHeight + 'px'
+  el.style.opacity = '1'
+  el.addEventListener('transitionend', () => {
+    el.style.height = 'auto'
+  }, { once: true })
+}
+
+function beforeLeave(el) {
+  el.style.height = el.scrollHeight + 'px'
+  el.style.opacity = '1'
+}
+
+function leave(el) {
+  // force reflow
+  void el.offsetHeight
+  el.style.transition = 'height .25s ease, opacity .25s ease'
+  el.style.height = '0'
+  el.style.opacity = '0'
+}
+
 </script>
 
 <template>
   <div class="home">
     <!-- 动态显示区 -->
+    <!-- タイトル -->
     <section class="dynamic">
-      <!-- 默认图：始终存在，仅大小变化 -->
+      <transition name="collapse-fade" @before-enter="beforeEnter" @enter="enter" @before-leave="beforeLeave"
+        @leave="leave">
+        <div v-if="activeKey === null" class="hero-text">
+          <h1>Hey, I'm Uyoko 👋</h1>
+          <p>Frontend Engineer / UI / UX</p>
+        </div>
+      </transition>
+
+      <!-- プロフィール写真 -->
       <div class="heroMedia" :class="{ compact: ActiveComponent }">
-        <img :src="heroImageUrl" alt="" />
+        <img :src="heroImageUrl" alt="Home" @click="resetTab" />
       </div>
 
       <!-- 内容面板：有内容才渲染 -->
@@ -56,28 +95,30 @@ function onClickTab(key) {
 
     <!-- 按钮区 -->
     <nav class="tabbar" aria-label="Portfolio sections">
-  <TabButton
-    v-for="t in tabs"
-    :key="t.key"
-    :label="t.label"
-    :icon="t.icon"
-    :active="activeKey === t.key"
-    @click="onClickTab(t.key)"
-  />
-</nav>
+      <TabButton v-for="t in tabs" :key="t.key" :label="t.label" :icon="t.icon" :active="activeKey === t.key"
+        @click="onClickTab(t.key)" />
+    </nav>
 
   </div>
 </template>
 
 <style scoped>
-/* 不设高度、不设 min-height */
-
 .home {
   display: flex;
   flex-direction: column;
 }
 
 /* 动态区：高度完全由内部内容决定 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 .dynamic {
   display: flex;
   flex-direction: column;
@@ -95,7 +136,7 @@ function onClickTab(key) {
 
 /* 点击后缩小 */
 .heroMedia.compact {
-  max-width: 480px;
+  max-width: 120x;
 }
 
 .heroMedia img {

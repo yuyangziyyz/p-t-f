@@ -1,0 +1,32 @@
+:root {
+  /* Colors */
+  --color-primary: #6c5ce7;
+  --color-accent: #00cec9;
+
+  --color-text-main: #111;
+  --color-text-sub: #666;
+  --color-text-muted: #999;
+
+  --color-bg-main: #ffffff;
+  --color-bg-sub: #f7f7f7;
+
+  /* Typography */
+  --font-base: system-ui, -apple-system, BlinkMacSystemFont,
+               "Segoe UI", "Noto Sans JP", sans-serif;
+
+  /* Font sizes */
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.5rem;
+  --font-size-xl: 2.5rem;
+
+  /* Spacing */
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 2rem;
+
+  /* UI */
+  --radius-md: 12px;
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --transition-base: 0.3s ease;
+}

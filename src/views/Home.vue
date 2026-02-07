@@ -32,7 +32,7 @@ const ActiveComponent = computed(() =>
 )
 
 const heroImageUrl = new URL(
-  '../assets/images/hero.jpg',
+  '../assets/images/hero.png',
   import.meta.url
 ).href
 

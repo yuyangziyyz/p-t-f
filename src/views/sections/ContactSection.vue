@@ -11,7 +11,7 @@
             <div class="value">yourname@example.com</div>
           </div>
           <div class="right">
-            <button class="copy" :disabled="locks.email" @click="copy('yourname@example.com', 'email')">
+            <button class="copy" :disabled="locks.email" @click="copy('yuyangziyyz@gmail.com', 'email')">
               <img class="copy-icon" src="/img/Copy-24.png" alt="copy" />
             </button>
           </div>
@@ -80,9 +80,9 @@ const copy = async (text, key) => {
 <style scoped>
 .sec { min-height: 80vh; }
 .contact {
-  width: min(900px, 92vw);
+  width: min(810px, 92vw);
   margin: 0 auto;
-  padding: 72px 0;
+  padding: 64px 0;
 }
 .title {
   font-size: clamp(28px, 3.5vw, 40px);

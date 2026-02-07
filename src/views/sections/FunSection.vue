@@ -19,9 +19,9 @@
 </template>
 
 <style scoped>
-.sec { min-height: 100vh; }
+.sec { min-height: 80vh; }
 .fun {
-  width: min(720px, 92vw);
+  width: min(810px, 92vw);
   margin: 0 auto;
   padding: 64px 0;
 }

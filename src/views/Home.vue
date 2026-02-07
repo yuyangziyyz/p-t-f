@@ -7,8 +7,8 @@ import SkillsSection from './sections/SkillsSection.vue'
 import FunSection from './sections/FunSection.vue'
 import ContactSection from './sections/ContactSection.vue'
 import TabButton from '../components/TabButton.vue'
+import FluidCursor from '../components/FluidCursor.vue'
 
-import FluidBackground from '../components/FluidBackground.vue'
 
 const activeKey = ref(null)
 const isHome = computed(() => activeKey.value === null)
@@ -74,8 +74,9 @@ function leave(el) {
 </script>
 
 <template>
-  <FluidBackground />
+
   <div class="home">
+    <FluidCursor />
     <!-- 动态显示区 -->
     <!-- タイトル -->
     <section class="dynamic">
@@ -163,8 +164,10 @@ function leave(el) {
   justify-content: center;
   align-items: center;
   /* 关键：给容器一个可控占位 */
-  aspect-ratio: 16 / 9;   /* 你按图片比例改：1/1、4/3、3/4 都行 */
-  max-height: 320px;      /* 上限，避免太高（不是固定高度） */
+  aspect-ratio: 16 / 9;
+  /* 你按图片比例改：1/1、4/3、3/4 都行 */
+  max-height: 320px;
+  /* 上限，避免太高（不是固定高度） */
 }
 
 .heroMedia img {
@@ -175,7 +178,8 @@ function leave(el) {
 
 /* compact 时让“占位”也变小（不会留空隙） */
 .heroMedia.compact {
-  max-height: 120px;      /* 这是上限，不是死固定 */
+  max-height: 120px;
+  /* 这是上限，不是死固定 */
 }
 
 
@@ -267,8 +271,55 @@ function leave(el) {
     transition: none;
   }
 }
-.home{
-  position: relative;
+
+:deep(.fluid-layer) {
+  position: fixed;
+  inset: 0;
   z-index: 1;
+  pointer-events: none;
+}
+
+/* 内容层放在背景上面 */
+.home {
+  position: relative;
+  /* 让内部 z-index 有参照 */
+  z-index: 0;
+}
+
+.home> :not(.dream-bg):not(.fluid-layer) {
+  position: relative;
+  z-index: 2;
+}
+
+.fluid-layer {
+  pointer-events: none;
+}
+
+/* 动画：慢慢漂移 */
+@keyframes dreamShift {
+  0% {
+    background-position: 0% 20%;
+  }
+
+  50% {
+    background-position: 70% 30%;
+  }
+
+  100% {
+    background-position: 20% 80%;
+  }
+}
+
+.dream-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.10), transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.08), transparent 45%),
+    radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.06), transparent 50%);
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  filter: blur(2px);
 }
 </style>

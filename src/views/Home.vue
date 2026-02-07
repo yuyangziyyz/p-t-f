@@ -190,12 +190,9 @@ function leave(el) {
   max-width: 960px;
   margin: 0 auto;
   padding-top: 12px;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
-  aspect-ratio: 16 / 9;
   max-height: 320px;
 }
 
@@ -203,6 +200,7 @@ function leave(el) {
   height: 100%;
   object-fit: cover;
   border-radius: 18px;
+  display: block;
 }
 
 /* compact：只控制占位，不做 transform */

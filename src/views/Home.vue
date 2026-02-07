@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 
 import HeroSection from './sections/HeroSection.vue'
 import WorksSection from './sections/WorksSection.vue'
@@ -11,6 +11,7 @@ import FluidCursor from '../components/FluidCursor.vue'
 
 
 const activeKey = ref(null)
+const panelRef = ref(null)
 const isHome = computed(() => activeKey.value === null)
 const isCompact = computed(() => activeKey.value !== null)
 
@@ -38,6 +39,9 @@ const heroImageUrl = new URL(
 
 function onClickTab(key) {
   activeKey.value = key
+  nextTick(() => {
+    panelRef.value?.scrollTo({ top: 0, behavior: 'auto' })
+  })
 }
 
 function resetTab() {
@@ -96,7 +100,7 @@ function leave(el) {
       </div>
       <!-- 内容面板：有内容才渲染 -->
       <div v-if="ActiveComponent" class="panelWrap">
-        <div class="panel">
+        <div class="panel" ref="panelRef">
           <component :is="ActiveComponent" />
         </div>
       </div>

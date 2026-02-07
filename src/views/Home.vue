@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick ,onMounted, onBeforeUnmount, watch} from 'vue'
 
 import HeroSection from './sections/HeroSection.vue'
 import WorksSection from './sections/WorksSection.vue'
@@ -21,7 +21,50 @@ const activeKey = ref(null)
  * セクション表示時のみ、スクロール位置を先頭へ戻すための参照
  */
 const panelRef = ref(null)
+const isPanelScrolling = ref(false)
+let scrollTimer = null
 
+function handlePanelScroll() {
+  isPanelScrolling.value = true
+  clearTimeout(scrollTimer)
+  scrollTimer = setTimeout(() => {
+    isPanelScrolling.value = false
+  }, 800)
+}
+
+function bindPanelScroll() {
+  if (!panelRef.value) return
+  panelRef.value.addEventListener('scroll', handlePanelScroll, { passive: true })
+}
+
+function unbindPanelScroll() {
+  if (!panelRef.value) return
+  panelRef.value.removeEventListener('scroll', handlePanelScroll)
+}
+
+// 关键：activeKey 变化时，panel 会 v-if 出现/消失
+watch(
+  () => activeKey.value,
+  async (newVal, oldVal) => {
+    // 切换时先清理旧监听（安全）
+    unbindPanelScroll()
+
+    // 只有进入某个 tab 时才有 panel
+    if (newVal !== null) {
+      await nextTick()
+      bindPanelScroll()
+    } else {
+      // 回到 Home 时也清掉状态
+      isPanelScrolling.value = false
+      clearTimeout(scrollTimer)
+    }
+  }
+)
+
+onBeforeUnmount(() => {
+  unbindPanelScroll()
+  clearTimeout(scrollTimer)
+})
 /**
  * タブ一覧（表示に必要な情報のみ）
  * - key：内部識別子
@@ -141,7 +184,7 @@ function leave(el) {
 
       <!-- セクション内容（選択時のみ描画） -->
       <div v-if="ActiveComponent" class="panelWrap">
-        <div class="panel" ref="panelRef">
+        <div class="panel" :class="{ 'is-scrolling': isPanelScrolling }" ref="panelRef">
           <component :is="ActiveComponent" />
         </div>
       </div>
@@ -280,39 +323,86 @@ function leave(el) {
    セクションパネル
    - この部分だけスクロールさせる
    ========================= */
+/* =========================
+   セクションパネル（改）
+   ========================= */
 .panelWrap {
   flex: 1 1 auto;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
   display: flex;
+  position: relative;
+
+  /* dyn-wrap に少し潜り込ませる */
+  margin-top: -14px;
+  padding-top: 14px;
 }
 
+/* 上部フェード（dyn-wrap との自然な繋ぎ） */
+.panelWrap::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 28px;
+  z-index: 3;
+  pointer-events: none;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.92),
+    rgba(255, 255, 255, 0)
+  );
+}
+
+/* スクロール本体 */
 .panel {
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
+
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 16px;
+
+  padding: 22px 16px 16px;
   box-sizing: border-box;
-  border-radius: 18px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.7);
+
+  border: none;
+  border-radius: 0;
+  background: transparent;
+
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
 }
 
-/* スクロールバー（任意） */
+/* WebKit scrollbar（默认隐藏） */
 .panel::-webkit-scrollbar {
   width: 10px;
 }
 
+.panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .panel::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(0, 0, 0, 0);
   border-radius: 999px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
+
+/* 滚动中显示 */
+.panel.is-scrolling {
+  scrollbar-color: rgba(0, 0, 0, 0.22) transparent;
+}
+
+.panel.is-scrolling::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.22);
+}
+
 
 /* =========================
    タブバー

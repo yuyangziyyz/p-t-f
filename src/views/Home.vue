@@ -30,7 +30,7 @@ const panelRef = ref(null)
  * - component：表示するVueコンポーネント
  */
 const tabs = [
-  { key: 'hero', label: 'Me', subLabel: '私について', icon: '🏠', component: HeroSection },
+  { key: 'hero', label: 'Me', subLabel: '私について', icon: '👤', component: HeroSection },
   { key: 'works', label: 'Works', subLabel: '作成実績', icon: '🧩', component: WorksSection },
   { key: 'skills', label: 'Skills', subLabel: 'スキル', icon: '🛠️', component: SkillsSection },
   { key: 'fun', label: 'Fun', subLabel: '興味', icon: '✨', component: FunSection },

@@ -6,28 +6,35 @@
     <div class="fun__list">
       <article class="fun__card">
         <div class="fun__image-wrap">
-          <img
-            class="fun__image"
-            src="/img/S__3391492.jpg"
-            alt="Hiking and landscape photography"
-            loading="lazy"
-            decoding="async"
-          />
+          <img class="fun__image" src="/img/S__3391492.jpg" alt="Hiking and landscape photography" loading="lazy"
+            decoding="async" />
         </div>
       </article>
       <article class="fun__card">
         <div class="fun__image-wrap">
-          <img
-            class="fun__image"
-            src="/img/S__3391492.jpg"
-            alt="Hiking and landscape photography"
-            loading="lazy"
-            decoding="async"
-          />
+          <img class="fun__image" src="/img/S__3391492.jpg" alt="Hiking and landscape photography" loading="lazy"
+            decoding="async" />
         </div>
       </article>
     </div>
-    <p class="fun__desc">登山、徒步与风景摄影。</p>
+    <p class="fun__desc">
+      休日は、山に出かけたり、自然の中で過ごすことが多いです。<br>
+      登山やスキー、キャンプなど、季節に合わせて外で体を動かすのが好きです。<br>
+      <br>
+      自然の中にいると、考えすぎていたことが一度リセットされて、<br>
+      景色を見ながら歩いたり、雪の上を滑ったりしているうちに、<br>
+      気持ちが自然と前向きになります。<br>
+      <br>
+      特別なことをするというより、<br>
+      外に出て、今の時間を楽しむことを大切にしています。<br>
+      思い通りにいかないことがあっても、<br>
+      自然の中で過ごすと、少し視点が変わる気がします。<br>
+      <br>
+      そうした時間があることで、<br>
+      日常でも落ち着いて物事に向き合えたり、<br>
+      新しいことにも前向きに取り組めていると感じています。
+
+    </p>
   </section>
 </template>
 
@@ -51,7 +58,8 @@
 
 /* セクションタイトル */
 .fun__title {
-  font-size: 28px; /* H2 = 28px（base と統一） */
+  font-size: 28px;
+  /* H2 = 28px（base と統一） */
   font-weight: 700;
   margin: 0 0 24px;
 }
@@ -99,6 +107,7 @@
 
 /* 説明文（UI本文 12px） */
 .fun__desc {
+  padding-top: 20px;
   font-size: 12px;
   line-height: 1.7;
   margin: 0;

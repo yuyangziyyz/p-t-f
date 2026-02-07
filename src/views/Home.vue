@@ -83,16 +83,17 @@ function leave(el) {
           <p>Frontend Engineer / UI / UX</p>
         </div>
       </transition>
-
       <!-- プロフィール写真 -->
       <div class="heroMedia" :class="{ compact: isCompact }">
         <img :src="heroImageUrl" alt="Home" @click="resetTab" />
       </div>
-
       <!-- 内容面板：有内容才渲染 -->
-      <div v-if="ActiveComponent" class="panel">
-        <component :is="ActiveComponent" />
+      <div v-if="ActiveComponent" class="panelWrap">
+        <div class="panel">
+          <component :is="ActiveComponent" />
+        </div>
       </div>
+
     </section>
 
     <!-- 按钮区 -->
@@ -104,101 +105,32 @@ function leave(el) {
   </div>
 </template>
 
-<!-- <style scoped>
-.home {
-  display: flex;
-  flex-direction: column;
-}
-
-/* 动态区：高度完全由内部内容决定 */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.4s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.dynamic {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px;
-}
-
-/* 默认大图 */
-.heroMedia {
-  width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
-  transition: all 240ms ease;
-}
-
-/* 点击后缩小 */
-.heroMedia img{
-  transition: transform .35s ease, opacity .35s ease;
-  transform: scale(1);
-  transform-origin: top;
-}
-
-.heroMedia.compact img{
-  transform: scale(.35);
-}
-
-/* 内容面板：没有内容就不存在 */
-.panel {
-  width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 16px;
-}
-
-/* 按钮区 */
-.tabbar {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  padding: 16px;
-}
-
-.tabbar button {
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: transparent;
-  border: 1px solid #ccc;
-  cursor: pointer;
-}
-
-.tabbar button.active {
-  border-color: #000;
-}
-</style> -->
-
 <style scoped>
 /* =========
-   Layout
+   Page shell (no page scroll)
    ========= */
 .home {
+  height: 100dvh;
   display: flex;
   flex-direction: column;
-}
-
-/* 动态区：高度由内部内容决定 */
-.dynamic {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px;
+  box-sizing: border-box;
+  /* 整体留边距 */
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
 }
 
 /* =========
-   Hero text
+   Dynamic area takes remaining height
    ========= */
-/* 你现在用的是 JS hooks（beforeEnter/enter/leave）控制 height/opacity，
-   这里不需要再写 collapse-fade 的 CSS 规则，否则可能“打架”。
-   只保留 hero-text 的基础样式即可。 */
+.dynamic {
+  flex: 1;
+  min-height: 0;
+  /* 关键：让内部可滚动元素的高度能正确计算 */
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+}
+
+/* hero text（由你的 transition hooks 控制 height/opacity） */
 .hero-text {
   width: 100%;
   max-width: 960px;
@@ -207,100 +139,129 @@ function leave(el) {
 }
 
 .hero-text h1 {
+  margin: 0;
   font-size: 2.4rem;
   line-height: 1.2;
   font-weight: 700;
-  margin: 0;
 }
 
 .hero-text p {
   margin: 10px 0 0;
   font-size: 1.05rem;
-  opacity: 0.72;
+  opacity: .72;
 }
 
-/* =========
-   Hero Media (image)
-   ========= */
-/* 重点：不要 transition: all（会引起布局属性也参与动画，容易卡）
-   用 transform 做缩放，最顺，而且不需要固定高度。 */
+/* hero image */
 .heroMedia {
-  width: 100%;
   max-width: 960px;
   margin: 0 auto;
-
+  padding-top: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
-
-  transition: transform 0.35s ease, opacity 0.35s ease;
-  transform: scale(1);
-  transform-origin: top center;
-}
-
-.heroMedia.compact {
-  transform: scale(0.88); /* 建议 0.85~0.92 之间微调 */
-  opacity: 0.98;
+  /* 关键：给容器一个可控占位 */
+  aspect-ratio: 16 / 9;   /* 你按图片比例改：1/1、4/3、3/4 都行 */
+  max-height: 320px;      /* 上限，避免太高（不是固定高度） */
 }
 
 .heroMedia img {
-  display: block;
-  width: min(360px, 70vw); /* 不固定高度，但保持一个稳定的视觉宽度 */
-  height: auto;
-  border-radius: 18px;     /* 你想要玻璃/卡片感可以留圆角 */
-  user-select: none;
-  -webkit-user-drag: none;
-  cursor: pointer;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 18px;
+}
+
+/* compact 时让“占位”也变小（不会留空隙） */
+.heroMedia.compact {
+  max-height: 120px;      /* 这是上限，不是死固定 */
+}
+
+
+.heroMedia.compact {
+  transform: scale(.75);
+  opacity: .98;
 }
 
 /* =========
-   Panel (ActiveComponent area)
+   Scroll ONLY inside panel
    ========= */
+.panelWrap {
+  flex: 1;
+  /* 吃掉 dynamic 中剩余高度 */
+  min-height: 0;
+  /* 关键：让 .panel 的 overflow-y 生效 */
+  display: flex;
+}
+
 .panel {
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
-  padding: 16px;
 
-  /* 可选：让面板看起来更像卡片 */
+  /* 只让这里滚动 */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  padding: 16px;
+  box-sizing: border-box;
+
   border-radius: 18px;
-  /* 如果你不想要边框/背景可以删掉下面两行 */
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, .08);
+  background: rgba(255, 255, 255, .7);
+}
+
+/* 可选：滚动条 */
+.panel::-webkit-scrollbar {
+  width: 10px;
+}
+
+.panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, .18);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 /* =========
-   Tabbar
+   Tabbar fixed height & fixed position
    ========= */
 .tabbar {
+  height: 64px;
+  /* 固定高度 */
+  flex: 0 0 64px;
+
   display: flex;
+  align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 16px 24px;
   flex-wrap: wrap;
+
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, .08);
+  background: rgba(255, 255, 255, .78);
+  backdrop-filter: blur(10px);
 }
 
-/* 你 TabButton 组件内部如果不是 button，这里可能不生效；
-   如果 TabButton 根元素就是 button 就 OK。 */
+/* tabbar 内按钮（如果 TabButton 根不是 button，这里可能无效） */
 .tabbar button {
   padding: 8px 14px;
   border-radius: 999px;
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, .18);
   cursor: pointer;
 }
 
 .tabbar button.active {
-  border-color: rgba(0, 0, 0, 0.85);
+  border-color: rgba(0, 0, 0, .85);
 }
 
-/* =========
-   (Optional) Reduce motion
-   ========= */
 @media (prefers-reduced-motion: reduce) {
   .heroMedia {
     transition: none;
   }
 }
 </style>
-

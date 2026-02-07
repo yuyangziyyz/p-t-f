@@ -15,11 +15,11 @@ const isHome = computed(() => activeKey.value === null)
 const isCompact = computed(() => activeKey.value !== null)
 
 const tabs = [
-  { key: 'hero', label: 'Home', icon: '🏠', component: HeroSection },
-  { key: 'works', label: 'Works', icon: '🧩', component: WorksSection },
-  { key: 'skills', label: 'Skills', icon: '🛠️', component: SkillsSection },
-  { key: 'fun', label: 'Fun', icon: '✨', component: FunSection },
-  { key: 'contact', label: 'Contact', icon: '✉️', component: ContactSection },
+  { key: 'hero', label: 'Me', subLabel: '私について', icon: '🏠', component: HeroSection },
+  { key: 'works', label: 'Works', subLabel: '作成実績', icon: '🧩', component: WorksSection },
+  { key: 'skills', label: 'Skills', subLabel: 'スキル', icon: '🛠️', component: SkillsSection },
+  { key: 'fun', label: 'Fun', subLabel: '興味', icon: '✨', component: FunSection },
+  { key: 'contact', label: 'Contact', subLabel: '連絡', icon: '✉️', component: ContactSection },
 ]
 
 
@@ -105,7 +105,7 @@ function leave(el) {
 
     <!-- 按钮区 -->
     <nav class="tabbar" aria-label="Portfolio sections">
-      <TabButton v-for="t in tabs" :key="t.key" :label="t.label" :icon="t.icon" :active="activeKey === t.key"
+      <TabButton v-for="t in tabs" :key="t.key" :label="t.label" :sub-label="t.subLabel" :icon="t.icon" :active="activeKey === t.key"
         @click="onClickTab(t.key)" />
     </nav>
 
@@ -246,47 +246,51 @@ function leave(el) {
 }
 
 /* =========
-   Tabbar
+   Tabbar (Home.vue)
    ========= */
-.tabbar {
-  height: 64px;
-  flex: 0 0 64px;
+.tabbar{
+  width: min(980px, 100%);
+  margin: 0 auto;
 
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   gap: 12px;
+
+  /* 小屏允许换行，大屏不换 */
   flex-wrap: wrap;
 
-  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
-  box-sizing: border-box;
-
-  border-radius: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(10px);
-}
-
-.tabbar button {
-  padding: 8px 14px;
-  border-radius: 999px;
+  /* 无背景 / 无边框 */
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.18);
-  cursor: pointer;
+  border: none;
+  backdrop-filter: none;
+  padding: 8px 12px 32px;
+  box-sizing: border-box;
 }
 
-.tabbar button.active {
-  border-color: rgba(0, 0, 0, 0.85);
+/* 手机 */
+@media (max-width: 480px){
+  .tabbar{
+    gap: 8px;
+    padding: 8px 10px calc(10px + env(safe-area-inset-bottom));
+  }
 }
+
+/* 平板及以上：尽量不换行 */
+@media (min-width: 768px){
+  .tabbar{
+    flex-wrap: nowrap;
+  }
+}
+
 
 .bg-word{
   position: fixed;
   left: 50%;
-  bottom: 18px;
+  bottom: -60px;
   transform: translateX(-50%);
   z-index: 1;          /* 和 fluid 同层或略上都行 */
   pointer-events: none;
-
   font-size: clamp(96px, 22vw, 280px);
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -294,7 +298,7 @@ function leave(el) {
   white-space: nowrap;
 
   background: linear-gradient(to bottom,
-    rgba(120,120,120,0.55),
+    rgba(120,120,120,0.45),
     rgba(180,180,180,0.18)
   );
   -webkit-background-clip: text;

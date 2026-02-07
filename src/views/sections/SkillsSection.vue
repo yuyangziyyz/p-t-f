@@ -254,9 +254,9 @@ const percentClass = computed(() => {
 }
 
 /* ====== Color states (red/orange/green like the pen) ====== */
-.green { --primary: rgb(83, 252, 83); }
-.orange { --primary: rgb(198, 216, 35); }
-.red { --primary: rgb(237, 59, 59); }
+.green { --primary: rgb(18, 174, 21); }
+.orange { --primary: rgb(196, 212, 48); }
+.red { --primary: rgb(224, 100, 100); }
 
 /* Responsive */
 @media (max-width: 860px) {

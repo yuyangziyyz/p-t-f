@@ -1,35 +1,102 @@
+<script setup>
+import { computed, ref } from 'vue'
+
+/**
+ * スキル一覧（固定データ）
+ * - value は 0〜100 を想定（表示側で clamp する）
+ */
+const SKILLS = [
+  { key: 'html', label: 'HTML', value: 90 },
+  { key: 'css', label: 'CSS / SCSS', value: 88 },
+  { key: 'js', label: 'JavaScript', value: 85 },
+  { key: 'vue', label: 'Vue', value: 80 },
+  { key: 'php', label: 'PHP', value: 60 },
+  { key: 'react', label: 'React', value: 55 },
+  { key: 'git', label: 'Git', value: 75 },
+  { key: 'a11y', label: 'Accessibility', value: 70 },
+  { key: 'ps', label: 'Photoshop', value: 82 },
+  { key: 'ai', label: 'Illustrator', value: 80 },
+  { key: 'xd', label: 'Adobe XD', value: 80 },
+  { key: 'figma', label: 'Figma', value: 65 },
+  { key: 'pr', label: 'Premiere Pro', value: 60 },
+  { key: 'ae', label: 'After Effects', value: 60 },
+  { key: 'wordpress', label: 'WordPress', value: 85 },
+  { key: 'eccube', label: 'EC-CUBE', value: 55 },
+  { key: 'shopify', label: 'Shopify', value: 60 },
+]
+
+/**
+ * 選択中のスキル（key だけ持つと状態管理が安定する）
+ */
+const selectedKey = ref(SKILLS[0].key)
+
+function select(key) {
+  selectedKey.value = key
+}
+
+/**
+ * 選択中のスキル情報
+ */
+const selected = computed(() => {
+  return SKILLS.find(s => s.key === selectedKey.value) ?? SKILLS[0]
+})
+
+/**
+ * 表示用パーセンテージ（0〜100 に丸める）
+ */
+const displayValue = computed(() => {
+  const v = Number(selected.value?.value ?? 0)
+  return Math.max(0, Math.min(100, Math.round(v)))
+})
+
+/**
+ * 水面位置：top = 100 - value（%）
+ */
+const waterTop = computed(() => `${100 - displayValue.value}%`)
+
+/**
+ * 色状態：0〜33 = red / 34〜66 = orange / 67〜100 = green
+ */
+const percentClass = computed(() => {
+  const v = displayValue.value
+  if (v < 34) return 'red'
+  if (v < 67) return 'orange'
+  return 'green'
+})
+</script>
+
 <template>
-  <section class="skills">
-    <!-- Left -->
-    <div class="left">
-      <h2 class="title">Skills</h2>
-      <p class="desc">
+  <section class="skills" aria-label="Skills section">
+    <!-- Left: テキスト + スキル選択 -->
+    <div class="skills__left">
+      <h2 class="skills__title">Skills</h2>
+
+      <p class="skills__desc">
         フロントエンド開発を中心に、Webサイトの実装や改修を担当してきました。デザインの意図を汲み取りながら、ユーザーにとって分かりやすく、保守しやすい実装を意識しています。CMSを用いたサイト運用や、ECサイトの軽微な改修にも対応しており、現在は対応範囲を広げるため、バックエンド領域についても学習を進めています。
       </p>
 
-      <div class="btns">
+      <div class="skills__btns" role="list">
         <button
-          v-for="s in skills"
+          v-for="s in SKILLS"
           :key="s.key"
           class="skill-btn"
-          :class="{ active: s.key === selected.key }"
+          :class="{ active: s.key === selectedKey }"
           type="button"
-          @click="selectSkill(s)"
+          @click="select(s.key)"
         >
           <span class="label">{{ s.label }}</span>
         </button>
       </div>
     </div>
 
-    <!-- Right -->
-    <div class="right">
+    <!-- Right: メーター表示 -->
+    <div class="skills__right">
       <div class="panel">
-        <!-- 关键：外层 class 由 percentClass 控制：red/orange/green -->
+        <!-- 外側クラスで色（--primary）を切り替える -->
         <div class="bubbleWrap" :class="percentClass">
-          <div class="progress">
+          <div class="progress" aria-hidden="true">
             <div class="inner">
               <div class="percent"><span>{{ displayValue }}%</span></div>
-              <!-- water 的 top 用 style 绑定：top = 100 - value (%) -->
               <div class="water" :style="{ top: waterTop }"></div>
               <div class="glare"></div>
             </div>
@@ -45,154 +112,136 @@
   </section>
 </template>
 
-<script setup>
-import { computed, ref } from "vue";
-
-const skills = ref([
-  { key: "html", label: "HTML", value: 90 },
-  { key: "css", label: "CSS / SCSS", value: 88 },
-  { key: "js", label: "JavaScript", value: 85 },
-  { key: "vue", label: "Vue", value: 80 },
-  { key: "php", label: "PHP", value: 60 },
-  { key: "react", label: "React", value: 55 },
-  { key: "git", label: "Git", value: 75 },
-  { key: "a11y", label: "Accessibility", value: 70 },
-  { key: "ps", label: "Photoshop", value: 82 },
-  { key: "ai", label: "Illustrator", value: 80 },
-  { key: "xd", label: "Adobe XD", value: 80 },
-  { key: "figma", label: "Figma", value: 65 },
-  { key: "pr", label: "Premiere Pro", value: 60 },
-  { key: "ae", label: "After Effects", value: 60 },
-  { key: "wordpress", label: "WordPress", value: 85 },
-  { key: "eccube", label: "EC-CUBE", value: 55 },
-  { key: "shopify", label: "Shopify", value: 60 },
-]);
-
-const selected = ref(skills.value[0]);
-
-function selectSkill(s) {
-  selected.value = s;
-}
-
-const displayValue = computed(() => {
-  const v = Number(selected.value?.value ?? 0);
-  return Math.max(0, Math.min(100, Math.round(v)));
-});
-
-// water 的 top：原 pen 是 val = 100 - percent
-const waterTop = computed(() => `${100 - displayValue.value}%`);
-
-// 颜色段：原 pen 逻辑：100/3 分三段
-const percentClass = computed(() => {
-  const v = displayValue.value;
-  const colorInc = 100 / 3;
-  if (v < colorInc * 1) return "red";
-  if (v < colorInc * 2) return "orange";
-  return "green";
-});
-</script>
-
 <style scoped>
-/* ====== Layout ====== */
+/* =========================================
+   Skills section
+   ========================================= */
+
 .skills {
+  --card-radius: 20px;
+  --gap: 28px;
+
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
-  gap: 28px;
+  gap: var(--gap);
   align-items: start;
+
   padding: 24px;
-  border-radius: 20px;
+  border-radius: var(--card-radius);
 }
 
-.title {
-  font-size: 28px;
+/* Left */
+.skills__title {
+  font-size: 28px; /* 依頼：H2 28px */
   margin: 0 0 8px;
 }
 
-.desc {
+.skills__desc {
   margin: 0 0 18px;
   opacity: 0.85;
-  line-height: 1.6;
-  font-size: 12px;
+  line-height: 1.7;
+  font-size: 12px; /* 依頼：本文 12px */
 }
 
-.btns {
+/* ボタン一覧 */
+.skills__btns {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 6px;
 }
 
+/* ボタン（ガラス寄り + 可読性） */
 .skill-btn {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px;
+  justify-content: center;
+
+  padding: 8px 10px;
   border-radius: 8px;
-  border: 1px solid rgb(125, 121, 121,0.1);
-  background: rgb(110, 109, 109);
+  border: 1px solid rgba(125, 121, 121, 0.18);
+
+  background: rgba(110, 109, 109, 0.55);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
   cursor: pointer;
-  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
-  color: rgba(255, 255, 255);
+  user-select: none;
+
+  color: rgba(255, 255, 255, 0.92);
   font-size: 12px;
-}
-.skill-btn:hover {
-  transform: translateY(-1px);
-  border: 1px solid rgb(125, 121, 121,0.1);
-  background: rgba(167, 167, 167,0.6);
-}
-.skill-btn.active {
-  border-color: rgba(167, 167, 167);
-  background: rgba(255, 255, 255, 0.14);
-  color: rgba(0, 0, 0);
-}
-.label {
-  font-weight: 600;
-}
-.value {
-  opacity: 0.85;
-  font-variant-numeric: tabular-nums;
+
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, color 120ms ease;
 }
 
+.skill-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(167, 167, 167, 0.45);
+  background: rgba(167, 167, 167, 0.35);
+}
+
+.skill-btn.active {
+  border-color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.62);
+  color: rgba(0, 0, 0, 0.86);
+}
+
+.label {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Right panel */
 .panel {
-  border-radius: 20px;
+  border-radius: var(--card-radius);
   padding: 18px;
+
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
+/* メタ */
 .meta {
   margin-top: 14px;
   text-align: center;
 }
+
 .meta-title {
   font-weight: 700;
   font-size: 18px;
 }
+
 .meta-sub {
   margin-top: 4px;
   opacity: 0.9;
+  font-variant-numeric: tabular-nums;
 }
 
-/* ====== Bubble (CodePen-like DOM structure) ====== */
+/* =========================================
+   Bubble meter
+   ========================================= */
+
 .bubbleWrap {
   display: grid;
   place-items: center;
   margin-top: 6px;
 }
 
-/* 可自定义：球的尺寸 */
+/* 球サイズ（ここだけ触れば調整できる） */
 .progress {
   --size: 250px;
   --border: 5px;
   --inner-border: 5px;
-  --inner-size: calc(var(--size) - (var(--border) + var(--inner-border)) * 2);
 
   position: relative;
   width: var(--size);
   height: var(--size);
   border-radius: 50%;
   border: var(--border) solid var(--primary);
+
   transition: all 0.8s ease;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.35);
 }
@@ -206,7 +255,7 @@ const percentClass = computed(() => {
   z-index: 2;
 }
 
-/* 百分比文字 */
+/* % 表示 */
 .percent {
   position: absolute;
   inset: 0;
@@ -220,7 +269,7 @@ const percentClass = computed(() => {
   user-select: none;
 }
 
-/* 水：原 pen 的关键（200% 旋转，形成流体感） */
+/* 水面（回転で流体っぽくする） */
 .water {
   position: absolute;
   z-index: 1;
@@ -228,13 +277,15 @@ const percentClass = computed(() => {
   height: 200%;
   left: -50%;
   border-radius: 40%;
+
   background: color-mix(in srgb, var(--primary) 50%, transparent);
   box-shadow: 0 0 20px color-mix(in srgb, var(--primary) 70%, black);
+
   animation: spin 10s linear infinite;
   transition: top 1s ease;
 }
 
-/* 玻璃反光 */
+/* 反射 */
 .glare {
   position: absolute;
   top: -120%;
@@ -247,24 +298,30 @@ const percentClass = computed(() => {
   z-index: 5;
 }
 
-/* 旋转动画 */
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-/* ====== Color states (red/orange/green like the pen) ====== */
+/* 色状態 */
 .green { --primary: rgb(18, 174, 21); }
 .orange { --primary: rgb(196, 212, 48); }
 .red { --primary: rgb(224, 100, 100); }
 
-/* Responsive */
+/* =========================================
+   Responsive
+   ========================================= */
 @media (max-width: 860px) {
   .skills {
     grid-template-columns: 1fr;
   }
-  .btns {
-    grid-template-columns: 1fr;
+
+  .skills__btns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .progress {
+    --size: 220px;
   }
 }
 </style>

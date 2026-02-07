@@ -1,46 +1,37 @@
 <template>
-  <section class="sec">
-    <div class="contact">
-      <h2 class="title">Contact</h2>
-      <p class="sub">please contact me</p>
+  <!-- Contact セクション -->
+  <section class="contact" aria-label="Contact section">
+    <h2 class="contact__title">Contact</h2>
+    <p class="contact__sub">Please contact me</p>
 
-      <div class="cards">
-        <div class="card">
-          <div class="left">
-            <div class="label">Email</div>
-            <div class="value">yourname@example.com</div>
-          </div>
-          <div class="right">
-            <button class="copy" :disabled="locks.email" @click="copy('yuyangziyyz@gmail.com', 'email')">
-              <img class="copy-icon" src="/img/Copy-24.png" alt="copy" />
-            </button>
-          </div>
+    <div class="contact__cards">
+      <article v-for="item in CONTACTS" :key="item.id" class="contact__card">
+        <div class="contact__left">
+          <div class="contact__label">{{ item.label }}</div>
+          <div class="contact__value">{{ item.display }}</div>
         </div>
 
-        <div class="card">
-          <div class="left">
-            <div class="label">TEL</div>
-            <div class="value">+81 000 0000 0000</div>
-          </div>
-          <div class="right">
-            <button class="copy" :disabled="locks.tel" @click="copy('+8613800000000', 'tel')">
-              <img class="copy-icon" src="/img/Copy-24.png" alt="copy" />
-            </button>
-          </div>
-        </div>
+        <div class="contact__right">
+          <button
+            class="contact__copy"
+            type="button"
+            :disabled="locks[item.id]"
+            :aria-label="`Copy ${item.label}`"
+            @click="copy(item.copyText, item.id)"
+          >
+            <img class="contact__copy-icon" src="/img/Copy-24.png" alt="" aria-hidden="true" />
+          </button>
 
-        <div class="card">
-          <div class="left">
-            <div class="label">WeChat</div>
-            <div class="value">your_wechat_id</div>
-          </div>
-          <div class="right">
-            <button class="copy" :disabled="locks.wechat" @click="copy('your_wechat_id', 'wechat')">
-              <img class="copy-icon" src="/img/Copy-24.png" alt="copy" />
-            </button>
-          </div>
+          <!-- コピー結果（簡易トースト） -->
+          <span
+            v-if="locks[item.id]"
+            class="contact__toast"
+            aria-live="polite"
+          >
+            Copied
+          </span>
         </div>
-      </div>
+      </article>
     </div>
   </section>
 </template>
@@ -48,19 +39,38 @@
 <script setup>
 import { reactive } from 'vue'
 
+/**
+ * ContactSection
+ * - セクション共通枠（.contact）を使用
+ * - 表示は配列データから生成（重複を減らす）
+ * - クリックでクリップボードにコピー
+ */
+const CONTACTS = [
+  {
+    id: 'email',
+    label: 'Email',
+    display: 'yuyangziyyz@gmail.com',
+    copyText: 'yuyangziyyz@gmail.com',
+  }
+]
+
+/**
+ * コピー連打防止（Copied 表示にも使う）
+ */
 const locks = reactive({
   email: false,
   tel: false,
   wechat: false,
 })
 
-const copy = async (text, key) => {
-  if (locks[key]) return
-  locks[key] = true
+async function copy(text, id) {
+  if (locks[id]) return
+  locks[id] = true
 
   try {
     await navigator.clipboard.writeText(text)
   } catch {
+    // Clipboard API が使えない場合のフォールバック
     const ta = document.createElement('textarea')
     ta.value = text
     ta.style.position = 'fixed'
@@ -71,89 +81,140 @@ const copy = async (text, key) => {
     document.body.removeChild(ta)
   }
 
-  setTimeout(() => {
-    locks[key] = false
-  }, 2000)
+  window.setTimeout(() => {
+    locks[id] = false
+  }, 1600)
 }
 </script>
 
 <style scoped>
-.sec { min-height: 80vh; }
+/* =========================================
+   Contact section（共通セクション枠）
+   ========================================= */
 .contact {
-  width: min(810px, 92vw);
-  margin: 0 auto;
-  padding: 64px 0;
+  padding: 24px;
+  border-radius: 20px;
 }
-.title {
-  font-size: clamp(28px, 3.5vw, 40px);
+
+/* タイトル */
+.contact__title {
+  font-size: 28px; /* H2 = 28px（base と統一） */
   font-weight: 700;
-  margin: 0 0 10px;
+  margin: 0 0 8px;
 }
-.sub {
-  margin: 0 0 28px;
-  color: #4b4b4b;
-  font-size: 16px;
+
+/* サブテキスト（本文扱い：12px） */
+.contact__sub {
+  margin: 0 0 18px;
+  font-size: 12px;
+  line-height: 1.7;
+  opacity: 0.8;
 }
-.cards { display: grid; gap: 16px; }
-.card {
-  border: 1px solid #e8e8e8;
-  border-radius: 16px;
-  padding: 18px 20px;
-  background: #fff;
+
+/* =========================================
+   Cards
+   ========================================= */
+.contact__cards {
+  display: grid;
+  gap: 14px;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+/* Contact card（Apple 风格：グレー背景 + 黒系テキスト） */
+.contact__card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: #f5f5f7;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow:0 1px 2px rgba(0, 0, 0, 0.04);
 }
-.left { min-width: 0; }
-.right {
+
+.contact__left {
+  min-width: 0;
+}
+
+.contact__right {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
-.label {
+
+/* ラベル（小さく） */
+.contact__label {
   font-size: 12px;
   letter-spacing: 0.08em;
-  color: #8a8a8a;
+  color: black;
   margin-bottom: 6px;
 }
-.value {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f1f1f;
-  word-break: break-all;
+
+/* 値（目立たせる） */
+.contact__value {
+  font-size: 16px;
+  font-weight: 700;
+  color: black;
+  word-break: break-word;
 }
-.copy {
-  border: 1px solid #dcdcdc;
-  background: #f7f7f7;
-  padding: 8px;
+
+/* Copy button */
+.contact__copy {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.10);
   border-radius: 10px;
+  padding: 8px;
+
   cursor: pointer;
   line-height: 0;
+  user-select: none;
+
   transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
 }
-.copy:hover { background: #efefef; }
-.copy-icon {
+
+.contact__copy:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.contact__copy:active {
+  transform: scale(0.94);
+}
+
+.contact__copy:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.contact__copy-icon {
   width: 18px;
   height: 18px;
   display: block;
+  opacity: 0.9;
 }
-.toast {
+
+/* Toast */
+.contact__toast {
   font-size: 12px;
-  color: #2d7a4b;
-  background: #eaf6ef;
-  border: 1px solid #cfe8da;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   padding: 4px 8px;
   border-radius: 999px;
 }
 
-.copy:active {
-  transform: scale(0.94);
-  background: #e9e9e9;
-  border-color: #cfcfcf;
-}
-.copy:disabled {
-  opacity: 0.5;
-  cursor: pointer;
+/* =========================================
+   Responsive
+   ========================================= */
+@media (max-width: 600px) {
+  .contact__card {
+    padding: 14px 14px;
+  }
+
+  .contact__value {
+    font-size: 14px;
+  }
 }
 </style>

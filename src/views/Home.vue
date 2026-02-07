@@ -8,6 +8,8 @@ import FunSection from './sections/FunSection.vue'
 import ContactSection from './sections/ContactSection.vue'
 import TabButton from '../components/TabButton.vue'
 
+import FluidBackground from '../components/FluidBackground.vue'
+
 const activeKey = ref(null)
 const isHome = computed(() => activeKey.value === null)
 const isCompact = computed(() => activeKey.value !== null)
@@ -72,6 +74,7 @@ function leave(el) {
 </script>
 
 <template>
+  <FluidBackground />
   <div class="home">
     <!-- 动态显示区 -->
     <!-- タイトル -->
@@ -263,5 +266,9 @@ function leave(el) {
   .heroMedia {
     transition: none;
   }
+}
+.home{
+  position: relative;
+  z-index: 1;
 }
 </style>

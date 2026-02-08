@@ -1,24 +1,25 @@
 <script setup>
-import { ref, computed, nextTick ,onMounted, onBeforeUnmount, watch} from 'vue'
+import { ref, computed, nextTick, onBeforeUnmount, watch } from 'vue'
 
 import HeroSection from './sections/HeroSection.vue'
 import WorksSection from './sections/WorksSection.vue'
 import SkillsSection from './sections/SkillsSection.vue'
 import FunSection from './sections/FunSection.vue'
 import ContactSection from './sections/ContactSection.vue'
-
 import TabButton from '../components/TabButton.vue'
 import FluidCursor from '../components/FluidCursor.vue'
 
 /**
- * 現在アクティブなタブのキー
- * - null：Home（トップ）表示
- * - string：各セクション表示
+ * 現在アクティブなタブキー
+ * - null：Home（トップ）
+ * - string：各セクション
  */
 const activeKey = ref(null)
 
 /**
- * セクション表示時のみ、スクロール位置を先頭へ戻すための参照
+ * パネル（セクション表示領域）の参照
+ * - パネル内だけスクロールさせる
+ * - スクロール中のみスクロールバーを見せる
  */
 const panelRef = ref(null)
 const isPanelScrolling = ref(false)
@@ -42,19 +43,20 @@ function unbindPanelScroll() {
   panelRef.value.removeEventListener('scroll', handlePanelScroll)
 }
 
-// 关键：activeKey 变化时，panel 会 v-if 出现/消失
+/**
+ * ポイント：activeKey の変更で panel が v-if により出入りする
+ * - 表示されてから（nextTick）scroll を bind
+ * - 非表示時は状態をリセット
+ */
 watch(
   () => activeKey.value,
-  async (newVal, oldVal) => {
-    // 切换时先清理旧监听（安全）
+  async (newVal) => {
     unbindPanelScroll()
 
-    // 只有进入某个 tab 时才有 panel
     if (newVal !== null) {
       await nextTick()
       bindPanelScroll()
     } else {
-      // 回到 Home 时也清掉状态
       isPanelScrolling.value = false
       clearTimeout(scrollTimer)
     }
@@ -65,15 +67,16 @@ onBeforeUnmount(() => {
   unbindPanelScroll()
   clearTimeout(scrollTimer)
 })
+
 /**
  * タブ一覧（表示に必要な情報のみ）
  * - key：内部識別子
- * - label/subLabel：ボタン表示
+ * - label/subLabel：ボタン表示文言
  * - icon：絵文字アイコン
- * - component：表示するVueコンポーネント
+ * - component：表示する Vue コンポーネント
  */
 const tabs = [
-  { key: 'hero', label: 'Me', subLabel: '私について', icon: '👤', component: HeroSection },
+  { key: 'hero', label: 'Aboutme', subLabel: '私について', icon: '👤', component: HeroSection },
   { key: 'works', label: 'Works', subLabel: '作成実績', icon: '🧩', component: WorksSection },
   { key: 'skills', label: 'Skills', subLabel: 'スキル', icon: '🛠️', component: SkillsSection },
   { key: 'fun', label: 'Fun', subLabel: '興味', icon: '✨', component: FunSection },
@@ -82,27 +85,23 @@ const tabs = [
 
 /**
  * 現在表示するコンポーネント
- * - activeKey に該当がない場合は null（=面板を出さない）
+ * - activeKey に該当がない場合は null（=パネルを出さない）
  */
 const ActiveComponent = computed(() => {
-  const t = tabs.find(tab => tab.key === activeKey.value)
+  const t = tabs.find((tab) => tab.key === activeKey.value)
   return t?.component ?? null
 })
 
-/**
- * タブ選択中かどうか（画像のコンパクト表示などに使用）
- */
+/** セクション表示中かどうか（画像の compact 表示などに利用） */
 const isCompact = computed(() => activeKey.value !== null)
 
-/**
- * ヒーロー画像URL
- */
-const heroImageUrl = new URL('../assets/images/hero.png', import.meta.url).href
+/** ヒーロー画像 URL */
+const heroImageUrl = new URL('../assets/images/hero.png/', import.meta.url).href
 
 /**
  * タブクリック時：
  * 1) activeKey を更新
- * 2) パネルが表示された後（nextTick）に、スクロール位置を先頭へ戻す
+ * 2) パネルが描画された後に、スクロール位置を先頭へ戻す
  */
 function onClickTab(key) {
   activeKey.value = key
@@ -111,15 +110,15 @@ function onClickTab(key) {
   })
 }
 
-/**
- * Home（トップ）へ戻す
- */
+/** Home（トップ）へ戻す */
 function resetTab() {
   activeKey.value = null
 }
 
-/* ===== アコーディオン的な開閉アニメーション（Heroテキスト用） =====
-   - v-if の出入りで高さが変わるので、JSフックで height を制御する */
+/**
+ * Hero テキストの開閉アニメーション
+ * - v-if の出入りで高さが変わるため、JS フックで height を制御
+ */
 function beforeEnter(el) {
   el.style.height = '0'
   el.style.opacity = '0'
@@ -127,7 +126,7 @@ function beforeEnter(el) {
 
 function enter(el) {
   el.style.transition = 'height .35s ease, opacity .35s ease'
-  el.style.height = el.scrollHeight + 'px'
+  el.style.height = `${el.scrollHeight}px`
   el.style.opacity = '1'
   el.addEventListener(
     'transitionend',
@@ -139,7 +138,7 @@ function enter(el) {
 }
 
 function beforeLeave(el) {
-  el.style.height = el.scrollHeight + 'px'
+  el.style.height = `${el.scrollHeight}px`
   el.style.opacity = '1'
 }
 
@@ -154,13 +153,11 @@ function leave(el) {
 
 <template>
   <div class="home">
-    <!-- 背景（ポインターイベントを奪わない） -->
+    <!-- 背景（操作を邪魔しない） -->
     <FluidCursor />
     <div class="bg-word" aria-hidden="true">CRAFT</div>
 
-    <!-- メイン表示領域
-         - Home表示（activeKey=null）のときは中央寄せ
-         - セクション表示のときは上から積み、下側をパネルに割り当てる -->
+    <!-- メイン表示領域 -->
     <section class="dynamic" :class="{ 'has-panel': !!ActiveComponent }">
       <div class="dyn-wrap">
         <transition
@@ -176,7 +173,7 @@ function leave(el) {
           </div>
         </transition>
 
-        <!-- プロフィール画像（クリックでHomeへ戻る） -->
+        <!-- プロフィール画像（クリックで Home へ戻る） -->
         <div class="heroMedia" :class="{ compact: isCompact }">
           <img :src="heroImageUrl" alt="Home" @click="resetTab" />
         </div>
@@ -220,8 +217,7 @@ function leave(el) {
 }
 
 /* =========================
-   FluidCursor（最背面、操作を邪魔しない）
-   ※ FluidCursor 内部の .fluid-layer を deep で上書き
+   FluidCursor（最背面・操作を邪魔しない）
    ========================= */
 :deep(.fluid-layer) {
   position: fixed;
@@ -230,7 +226,7 @@ function leave(el) {
   pointer-events: none;
 }
 
-/* 画面上のコンテンツは FluidCursor より前面に */
+/* コンテンツは FluidCursor より前面に */
 .dynamic,
 .tabbar {
   position: relative;
@@ -260,7 +256,7 @@ function leave(el) {
   align-items: stretch;
 }
 
-/* ヒーロー（テキスト＋画像）部分は高さを内容に任せる */
+/* ヒーロー（テキスト＋画像） */
 .dyn-wrap {
   flex: 0 0 auto;
   display: flex;
@@ -314,17 +310,13 @@ function leave(el) {
   cursor: pointer;
 }
 
-/* セクション表示中：画像の占有高さだけ小さくする（見た目を安定させる） */
+/* セクション表示中：画像の占有高さを小さくする */
 .heroMedia.compact {
   max-height: 88px;
 }
 
 /* =========================
-   セクションパネル
-   - この部分だけスクロールさせる
-   ========================= */
-/* =========================
-   セクションパネル（改）
+   セクションパネル（この領域だけスクロール）
    ========================= */
 .panelWrap {
   flex: 1 1 auto;
@@ -338,9 +330,9 @@ function leave(el) {
   padding-top: 14px;
 }
 
-/* 上部フェード（dyn-wrap との自然な繋ぎ） */
+/* 上部フェード（dyn-wrap と自然に繋ぐ） */
 .panelWrap::before {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   right: 0;
@@ -348,12 +340,7 @@ function leave(el) {
   height: 28px;
   z-index: 3;
   pointer-events: none;
-
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.92),
-    rgba(255, 255, 255, 0)
-  );
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
 }
 
 /* スクロール本体 */
@@ -374,19 +361,18 @@ function leave(el) {
   border-radius: 0;
   background: transparent;
 
+  /* Firefox（通常は透明） */
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
 }
 
-/* WebKit scrollbar（默认隐藏） */
+/* WebKit scrollbar（通常は透明） */
 .panel::-webkit-scrollbar {
   width: 10px;
 }
-
 .panel::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .panel::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0);
   border-radius: 999px;
@@ -394,15 +380,13 @@ function leave(el) {
   background-clip: content-box;
 }
 
-/* 滚动中显示 */
+/* スクロール中だけ可視化 */
 .panel.is-scrolling {
   scrollbar-color: rgba(0, 0, 0, 0.22) transparent;
 }
-
 .panel.is-scrolling::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.22);
 }
-
 
 /* =========================
    タブバー
@@ -416,35 +400,13 @@ function leave(el) {
   justify-content: center;
   gap: 12px;
   flex-wrap: wrap;
+
   background: transparent;
   border: none;
   backdrop-filter: none;
+
   padding: 8px 12px 32px;
   box-sizing: border-box;
-}
-
-/* スマホ */
-@media (max-width: 480px) {
-  .tabbar {
-    gap: 8px;
-    padding: 8px 10px calc(10px + env(safe-area-inset-bottom));
-  }
-  .dynamic{
-    padding: 0px;
-  }
-  .heroMedia.compact{
-    max-height: 64px;
-}
-.panel{
-  padding: 0;
-}
-}
-
-/* タブレット以上：基本は1行で */
-@media (min-width: 768px) {
-  .tabbar {
-    flex-wrap: nowrap;
-  }
 }
 
 /* =========================
@@ -464,11 +426,7 @@ function leave(el) {
   line-height: 1;
   white-space: nowrap;
 
-  background: linear-gradient(
-    to bottom,
-    rgba(120, 120, 120, 0.45),
-    rgba(180, 180, 180, 0.18)
-  );
+  background: linear-gradient(to bottom, rgba(120, 120, 120, 0.45), rgba(180, 180, 180, 0.18));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -476,6 +434,36 @@ function leave(el) {
   opacity: 0.65;
 }
 
+/* =========================
+   Breakpoints
+   ========================= */
+
+/* SP */
+@media (max-width: 480px) {
+  .dynamic {
+    padding: 0;
+  }
+
+  .tabbar {
+    gap: 8px;
+    padding: 8px 10px calc(10px + env(safe-area-inset-bottom));
+  }
+
+  .heroMedia.compact {
+    max-height: 64px;
+  }
+
+  .panel {
+    padding: 0;
+  }
+}
+
+/* Tablet 以上（基本 1 行） */
+@media (min-width: 768px) {
+  .tabbar {
+    flex-wrap: nowrap;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .heroMedia {

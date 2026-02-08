@@ -1,170 +1,216 @@
 <script setup>
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-
-/**
- * WorksSection
- * - 横スクロール（scroll-snap）でカードを並べる
- * - PC/Tablet は矢印で「1ページ分（表示幅）」ずつ移動
- * - SP は指でドラッグ（ネイティブスクロール）
- * - カードクリックでフルスクリーンのPopupを表示
- *
- * Popup最適化ポイント：
- * - 参照UIっぽく「黒いBackdrop + 白いPanel + グレーのセクションカード」
- * - 右上クローズ（Sticky）
- * - フェード/スケールで表示アニメ
- * - フォーカスをCloseに移動 + ざっくりフォーカストラップ（Tab循環）
- */
+import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 
 const WORKS = [
   {
     id: 1,
     title: 'GCPホールディングス',
     subtitle: 'コーポレートサイト',
-    summary: '要件定義 / UIデザイン / フロントエンド / WordPress実装',
-    cover: '/img/gcp-bg.jpg',
+    summary: '要件定義 / サイト設計 / UIデザイン / フロントエンド実装 / WordPress構築',
+    cover: '/img/works/gcp-bg.jpg',
     year: '2024',
-    role: 'デザイナー / フロントエンド',
+    role: 'デザイナー / フロントエンドエンジニア',
     description:
-      'コーポレートサイトのデザイン・制作を担当。サイト設計からUIデザイン、イラスト制作、コーディングまで一貫して対応し、製品情報・実績・お知らせを管理画面から更新できるように実装しました。※クライアント要望によりPC版のみ対応。',
+      '太陽光発電を中心に、再生可能エネルギーおよびO&M事業を展開する企業のコーポレートサイト制作を担当しました。事業領域が多岐にわたるため、要件整理および情報設計から参画し、初見のユーザーにも事業全体が伝わる構成を設計。サイト設計、UIデザイン、イラスト制作、フロントエンド実装までを一貫して対応しました。WordPressをベースに、製品情報・実績・お知らせを管理画面から更新できる構成とし、クライアント自身で運用しやすいサイトを実現しています。※クライアント要望によりPC版のみ制作。',
     highlights: [
-      'サイト設計から実装まで一貫対応し、更新運用を想定した構成で制作',
-      '製品登録・実績登録・お知らせなど、管理画面からの更新機能を実装',
-      'クライアント要望に合わせ、PC版に最適化したレイアウトと表現を設計',
+      '要件定義および情報整理から参画し、事業全体を俯瞰できるサイト構成を設計',
+      'UIデザインとイラスト制作により、再生可能エネルギー事業の内容を視覚的に表現',
+      '製品・実績・お知らせを管理画面から更新可能なWordPress構成を設計・実装',
+      '運用フェーズを見据え、更新しやすさと拡張性を意識したフロントエンド設計',
+      'PC閲覧環境に最適化したレイアウトと導線設計を実施',
     ],
-    tech: ['WordPress', 'HTML', 'CSS', 'JavaScript', 'PHP', 'Adobe XD', 'Photoshop', 'Illustrator'],
+    tech: [
+      'WordPress',
+      'HTML',
+      'CSS',
+      'JavaScript',
+      'PHP',
+      'Adobe XD',
+      'Photoshop',
+      'Illustrator',
+    ],
     links: [{ label: 'Website', href: 'https://www.gcp-hd.co.jp/' }],
-    images: [{ alt: 'トップページ', src: '/img/works-gcp.png' }],
+    images: [{ alt: 'トップページ', src: '/img/works/works-gcp.png' }],
   },
   {
     id: 2,
     title: 'K-TEC Engineering',
     subtitle: 'コーポレートサイト',
-    summary: 'UIデザイン / フロントエンド',
-    cover: '/img/kt-pg.jpg',
-    year: '2024',
-    role: 'デザイナー / フロントエンド',
+    summary: 'サイト設計 / UIデザイン / フロントエンド実装 / WordPress構築',
+    cover: '/img/works/kt-pg.jpg',
+    year: '2022',
+    role: 'デザイナー / フロントエンドエンジニア',
     description:
-      '企業情報や事業内容を整理し、分かりやすい導線を意識したコーポレートサイトを制作しました。更新しやすさを考慮し、共通パーツ化やシンプルな構成を取り入れながら、UI設計とフロントエンド実装を行っています。',
+      '鉛蓄電池の延命・再生および買取回収を行う企業のコーポレートサイトリニューアルを担当しました。既存サイトの情報整理とデザイン刷新を目的に、サイトデザインおよびUI設計、2D・3Dイラスト制作、フロントエンド実装を担当しました。WordPressを用いて実績情報を編集・公開できる機能やお問い合わせフォームを実装し、情報発信と運用性の向上を図っています。',
     highlights: [
-      '情報整理と導線設計を重視したサイト構成',
-      '共通パーツ化により、更新作業の負担を軽減',
-      '軽量で保守しやすいスタイル設計を意識した実装',
+      '既存サイトの情報を整理し、分かりやすさを重視したサイトデザインを設計',
+      '2D・3Dイラストを用い、専門性の高い事業内容を視覚的に表現',
+      '実績情報を管理画面から編集・公開できるWordPress機能を実装',
+      'お問い合わせフォームの新規追加により、ユーザーとの接点を強化',
     ],
-    tech: ['HTML', 'CSS', 'JavaScript'],
+    tech: [
+      'WordPress',
+      'HTML',
+      'CSS',
+      'JavaScript',
+      'PHP',
+      'Adobe XD',
+      'Photoshop',
+      'Illustrator',
+    ],
     links: [{ label: 'Website', href: 'https://k-tecengineering.co.jp/' }],
-    images: [
-      // { alt: 'トップページ', src: '/img/works/k-tec-1.jpg' },
-      // { alt: '下層ページ', src: '/img/works/k-tec-2.jpg' },
-    ],
-  },
-  {
-    id: 3,
-    title: 'IAA 大阪',
-    subtitle: 'コーポレートサイト',
-    summary: 'UIデザイン / フロントエンド',
-    cover: '/img/iaa-pg.jpg',
-    year: '2023',
-    role: 'デザイナー / フロントエンド',
-    description:
-      '既存のコーポレートサイトをベースに、ブランドトーンに合わせたUI調整とテンプレート実装を担当しました。全体の印象を崩さず、視認性や使いやすさを意識しながらフロントエンドの改修を行っています。',
-    highlights: [
-      'ブランドトーンを意識した配色・タイポグラフィ調整',
-      'テンプレート化によるページ表現の統一',
-      '既存構造を活かしたUI微調整と実装対応',
-    ],
-    tech: ['HTML', 'CSS', 'JavaScript'],
-    links: [{ label: 'Website', href: 'https://i-aa.co.jp/' }],
-    images: [
-      // { alt: 'トップページ', src: '/img/works/iaa-1.jpg' },
-      // { alt: '下層ページ', src: '/img/works/iaa-2.jpg' },
-    ],
-  },
-  {
-    id: 4,
-    title: '建材受発注システム',
-    subtitle: 'システムUI / UX',
-    summary: 'UIデザイン / 情報設計',
-    cover: '/img/kt-bg.jpg',
-    year: '2023',
-    role: 'UIデザイナー',
-    description:
-      '建材の受発注業務を支援する業務システムにおいて、UIデザインと情報設計を担当しました。利用者の業務フローを整理し、画面遷移や入力項目を見直すことで、迷いにくく分かりやすい操作性を目指しています。',
-    highlights: [
-      '業務フローをベースにした画面構成と遷移設計',
-      '入力項目や情報量を整理し、視認性を向上',
-      '管理者・利用者それぞれの立場を考慮したUI設計',
-    ],
-    tech: ['Figma', 'Adobe XD'],
-    links: [],
-    images: [
-      // { alt: '一覧画面', src: '/img/works/system-1.jpg' },
-      // { alt: '詳細・入力画面', src: '/img/works/system-2.jpg' },
-    ],
-  },
-  {
-    id: 5,
-    title: '中古車情報ポータル',
-    subtitle: 'フロントエンド運用',
-    summary: '実装 / 検証 / 運用対応',
-    cover: '/img/go-bg.png',
-    year: '2022–',
-    role: 'フロントエンド',
-    description:
-      '大規模な中古車情報ポータルサイトにおいて、日々の更新作業や改修対応を継続して担当しました。既存構造を理解したうえで、正確さと再現性を重視しながら、UI調整やテンプレート改修を行っています。',
-    highlights: [
-      '差分を意識した実装と、安全なリリースフローでの対応',
-      'UI・テンプレートの改修を通じた表示調整',
-      '検証から反映までの精度を重視した運用対応',
-    ],
-    tech: ['HTML', 'CSS', 'JavaScript', 'Git'],
-    links: [],
     images: [],
   },
   {
-    id: 6,
-    title: '化粧品メーカーECサイト',
-    subtitle: 'Shopify',
-    summary: 'UI改善 / 構造整理 / 表示速度対応',
-    cover: '/img/ec-bg.png',
-    year: '2024',
-    role: 'フロントエンド',
+    id: 3,
+    title: '一般社団法人IAA大阪',
+    subtitle: '公式ウェブサイトリニューアル / サーバー移行',
+    summary: '要件定義 / サイト設計 / UIデザイン / フロントエンド実装 / WordPress / サーバー移行',
+    cover: '/img/works/iaa-bg.jpg',
+    year: '2023',
+    role: 'デザイナー / フロントエンドエンジニア',
     description:
-      '化粧品メーカーの公式ECサイトにおいて、UI改善とサイト構造の整理を中心とした改修を担当しました。ページ構成や内部構造を見直しながら、表示速度や運用面にも配慮したフロントエンド対応を行っています。',
+      '一般社団法人IAA大阪の公式ウェブサイトリニューアルおよびサーバー移行作業を担当しました。既存サイトの構成やコンテンツを整理し、情報の分かりやすさと閲覧性の向上を目的にデザインを刷新。WordPressを用いてレスポンシブ対応を行い、スマートフォン・タブレット環境からも快適に閲覧できるサイトを構築しました。また、サーバー移行にあたってはWebサイトに加え、メールサーバーの移行作業も担当し、移行後の安定運用をサポートしました。',
     highlights: [
-      '商品ページ・一覧ページを中心としたUI改善',
-      '構造整理による回遊しやすいページ構成の検討',
-      '表示速度を意識したフロントエンド調整',
+      '要件整理および既存コンテンツの精査を行い、情報構造から見直したサイトリニューアルを実施',
+      'UIデザインの刷新とレスポンシブ対応により、ユーザーエクスペリエンスを向上',
+      'WordPressを用いた更新・運用しやすいサイト構成を設計・実装',
+      'サーバー移行作業を担当し、Webサイトおよびメールの継続利用を考慮した移行を実施',
+      'アクセス解析（Google Analytics）を考慮し、運用後の改善を見据えた構成を設計',
     ],
-    tech: ['Shopify', 'HTML', 'CSS', 'JavaScript'],
-    links: [],
-    images: [
-      // { alt: '商品一覧ページ', src: '/img/works/ec-1.jpg' },
-      // { alt: '商品詳細ページ', src: '/img/works/ec-2.jpg' },
+    tech: [
+      'WordPress',
+      'HTML',
+      'CSS',
+      'JavaScript',
+      'PHP',
+      'Adobe XD',
+      'Photoshop',
+      'Illustrator',
+      'Google Analytics',
     ],
-  },
-  {
+    links: [{ label: 'Website', href: 'https://i-aa.co.jp/' }],
+    images: [],
+  },{
+  id: 4,
+  title: '建材受発注システム',
+  subtitle: '業務システムUIデザイン',
+  summary: 'UIデザイン / 画面設計 / 設計書作成 / テスト対応 / デザイン調整',
+  cover: '/img/works/kt-bg.jpg',
+  year: '—',
+  role: 'UIデザイナー',
+  description:
+    '建材の予約・発注・受注・商談を行う業務システムにおいて、UIデザインを担当しました。本システムは管理者向け、加盟店向け、メーカー向けの3つのインターフェースで構成されており、それぞれ異なる業務フローと操作要件を持つ点が特徴です。クライアントおよびシステムエンジニアと連携しながら、各ユーザーの業務内容や利用シーンを踏まえたUI設計を行い、全体で約380画面に及ぶ画面デザインを担当しました。また、テスト工程にも関与し、設計意図と実装内容の差異確認やUI観点での不具合確認を行いました。',
+  highlights: [
+    '管理者・加盟店・メーカーの3者それぞれの業務フローを整理し、UI設計に反映',
+    '概要設計書・詳細設計書を作成し、画面仕様や操作ルールを明文化',
+    'エンジニアやクライアントと調整を行い、実装を見据えたUIデザインを設計',
+    'テスト工程に参加し、UI仕様の差異確認や操作性・表示不具合の確認を実施',
+    '約380画面に及ぶ大規模な業務システムのUIデザインを担当',
+  ],
+  tech: [
+    'Adobe XD',
+    'Photoshop',
+    'Illustrator',
+    'GitHub',
+  ],
+  links: [],
+  images: [{alt: 'uiデザイン-01', src: '/img/works/kt-01.png' },{alt: 'uiデザイン-02', src: '/img/works/kt-02.png'},{alt: 'uiデザイン-03', src: '/img/works/kt-03.png' }],
+},{
+  id: 5,
+  title: 'goonet',
+  subtitle: '大規模ポータルサイト フロントエンド運用・保守',
+  summary: 'フロントエンド実装 / 運用保守 / ABテスト / 進捗管理 / BSE対応',
+  cover: '/img/works/go-bg.png',
+  year: '2022—今まで',
+  role: 'フロントエンドエンジニア',
+  description:
+    '国内最大級の中古車情報ポータルサイト「goonet」において、フロントエンドの運用・保守を担当しています。トップページおよび各種キャンペーンページを中心に、デザイナーから共有されるデザイン稿をもとにコーディングを実施。実装過程でデザインと実際の表示環境との間に差異が生じた場合は、デザイナーと連携して仕様調整を行い、品質を担保しています。完成後はテスト環境に反映し、動作確認・表示確認を行ったうえで、本番環境（AWS）への公開まで一貫して対応しています。AB Tastyを用いたABテストの実装・検証にも対応し、UI改善施策の運用を支援しています。また、案件内容に応じてBSEとしての役割も一部担い、中国・西安拠点のエンジニアへの作業割り振り、要件伝達、Git上での成果物レビューおよびテストを行い、最終的な公開まで対応しました。',
+  highlights: [
+    '国内最大級ポータルサイトにおけるフロントエンド運用・保守を継続的に担当',
+    'トップページおよびキャンペーンページの実装・改修を安定運用',
+    'AB Tastyを用いたABテストの実装・検証を行い、UI改善施策に対応',
+    'デザイナーと連携し、デザインと実装差異の調整を通じて品質を担保',
+    'AWS環境におけるテスト〜本番公開フローを理解した運用対応',
+    'Backlogを用いた進捗管理および、BSEとして海外拠点（中国・西安）エンジニアとの連携',
+    'Git上で提出された成果物のレビュー・テストを行い、最終公開まで対応',
+  ],
+  tech: [
+    'HTML',
+    'CSS',
+    'JavaScript',
+    'Vue',
+    'AB Tasty',
+    'AWS',
+    'Figma',
+    'Adobe XD',
+    'Backlog',
+    'Termius',
+  ],
+  links: [{ label: 'Website', href: 'https://www.goo-net.com/' }],
+  images: [],
+},
+{
+  id: 6,
+  title: 'AXXZIA',
+  subtitle: 'ECサイト SEO改善',
+  summary: 'SEO改善 / UIデザイン / フロントエンド実装 / Shopify運用',
+  cover: '/img/works/ec-bg.png',
+  year: '2024–2025',
+  role: 'エンジニア / デザイナー',
+  description:
+    '化粧品メーカー「AXXZIA」の公式ECサイトにおけるSEO改善プロジェクトに参画しました。検索エンジンからの流入強化を目的に、サイト構造の最適化、メタタグの見直し、内部リンク構成の整理、ページ表示速度の改善を実施。加えて、ユーザー行動を意識したUI改善や新規コンテンツの提案・制作にも対応し、検索エンジンでの可視性向上とユーザー体験の両立を図りました。Shopify（Liquid）環境にて、既存構造を考慮しながら改善施策を実装しています。',
+  highlights: [
+    'サイト構造の整理および内部リンク設計の見直しによるSEO基盤の改善',
+    'メタタグ（title / description）の最適化を通じた検索結果での訴求力向上',
+    'ページ表示速度改善を意識したフロントエンド調整を実施',
+    'ユーザー導線を考慮したUI改善およびコンテンツ提案・制作',
+    'Shopify（Liquid）環境におけるSEO施策の実装・調整',
+    'Google Analytics、Search Console、Screaming Frogを用いた現状分析および改善検討',
+  ],
+  tech: [
+    'Shopify（Liquid）',
+    'HTML',
+    'CSS',
+    'JavaScript',
+    'Google Analytics',
+    'Google Search Console',
+    'Screaming Frog',
+    'Adobe XD',
+    'Photoshop',
+    'Illustrator',
+  ],
+  links: [{ label: 'Website', href: 'https://axxzia.jp/' }],
+  images: [],
+},
+{
   id: 7,
-  title: '天気確認システム',
-  subtitle: 'Weather API',
-  summary: 'API連携 / データ取得 / 表示ロジック',
-  cover: '/img/wt-bg.jpg',
+  title: 'Weather Search',
+  subtitle: '天気検索ミニアプリ（Vue 3）',
+  summary: 'Vue 3 / 外部API連携 / 位置情報 / エラーハンドリング / UI設計',
+  cover: 'img/works/wt-bg.jpg',
   year: '2025',
   role: 'フロントエンド',
   description:
-    '外部の天気APIを利用し、地域ごとの天気情報を取得・表示するシンプルな天気確認システムを個人制作しました。APIから取得したデータを整形し、ユーザーが直感的に確認できるUIを意識して実装しています。',
+    'OpenWeatherMap APIを利用し、都市名検索および位置情報から現在の天気を取得できるミニアプリを制作しました。初回アクセス時は位置情報で取得を試み、失敗時にはデフォルト都市へフォールバックすることで、常に結果が表示できるUXを意識しています。検索時のローディング・エラー表示、単位（℃/℉）切り替えに伴う再取得、直近リクエストの表示など、外部API連携に必要な状態管理と例外処理をVue 3（Composition API）で実装しました。',
   highlights: [
-    '外部APIを利用した天気データの取得と表示処理',
-    '取得データを分かりやすく整理する表示ロジックの設計',
-    'シンプルで見やすいUIを意識した画面構成',
+    'ジオコーディングAPIで都市名を正規化し、検索精度と表示名の分かりやすさを両立',
+    '位置情報（Geolocation）取得に対応し、失敗時はデフォルト都市へフォールバック',
+    'ローディング/エラー/結果表示の状態を整理し、ユーザーに迷わせないUIを設計',
+    '単位切り替え（metric/imperial）に応じて同一地点の天気を再取得し、表示を即時反映',
+    '天気アイコン・体感温度・湿度・風速・気圧などの情報をカードUIで整理して表示',
   ],
-  tech: ['JavaScript', 'Weather API', 'HTML', 'CSS'],
+  tech: [
+    'Vue 3 (Composition API)',
+    'JavaScript',
+    'HTML',
+    'CSS',
+    'OpenWeatherMap API',
+    'Geolocation API',
+  ],
   links: [{ label: 'Website', href: 'https://uyoko.com/weatherSearch/' }],
-  images: [
-    // { alt: '天気検索画面', src: '/img/works/weather-1.jpg' },
-    // { alt: '天気結果表示', src: '/img/works/weather-2.jpg' },
-  ],
-},
-
+  images: [],
+}
 ]
 
 const trackRef = ref(null)
@@ -172,15 +218,16 @@ const activeWork = ref(null)
 const closeBtnRef = ref(null)
 
 /**
- * 矢印：表示領域幅（= 1ページ）分スクロール
+ * 横スクロール（表示幅=1ページ）分移動
+ * - PC/Tablet の矢印ボタン用
  */
 function scrollByPage(direction) {
   const el = trackRef.value
   if (!el) return
-  const amount = el.clientWidth
-  el.scrollBy({ left: direction * amount, behavior: 'smooth' })
+  el.scrollBy({ left: direction * el.clientWidth, behavior: 'smooth' })
 }
 
+/** モーダル表示中は背景スクロールを禁止 */
 function lockScroll(locked) {
   document.documentElement.style.overflow = locked ? 'hidden' : ''
   document.body.style.overflow = locked ? 'hidden' : ''
@@ -188,16 +235,19 @@ function lockScroll(locked) {
 
 async function openWork(work) {
   activeWork.value = work
-  lockScroll(true)
   await nextTick()
   closeBtnRef.value?.focus?.()
 }
 
 function closeWork() {
   activeWork.value = null
-  lockScroll(false)
 }
 
+/**
+ * キーボード操作
+ * - Escape：閉じる
+ * - Tab：簡易フォーカストラップ
+ */
 function onKeydown(e) {
   if (!activeWork.value) return
 
@@ -207,32 +257,50 @@ function onKeydown(e) {
     return
   }
 
-  if (e.key === 'Tab') {
-    const root = document.querySelector('.worksModal__content')
-    if (!root) return
-    const focusables = root.querySelectorAll(
-      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
-    )
-    if (!focusables.length) return
-    const first = focusables[0]
-    const last = focusables[focusables.length - 1]
-    const active = document.activeElement
+  if (e.key !== 'Tab') return
 
-    if (e.shiftKey && active === first) {
-      e.preventDefault()
-      last.focus()
-    } else if (!e.shiftKey && active === last) {
-      e.preventDefault()
-      first.focus()
-    }
+  const root = document.querySelector('.worksModal__content')
+  if (!root) return
+
+  const focusables = root.querySelectorAll(
+    'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+  )
+  if (!focusables.length) return
+
+  const first = focusables[0]
+  const last = focusables[focusables.length - 1]
+  const current = document.activeElement
+
+  if (e.shiftKey && current === first) {
+    e.preventDefault()
+    last.focus()
+  } else if (!e.shiftKey && current === last) {
+    e.preventDefault()
+    first.focus()
   }
 }
 
-onMounted(() => window.addEventListener('keydown', onKeydown))
-onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
+/**
+ * activeWork の状態に合わせて
+ * - スクロールロック
+ * - keydown の bind/unbind
+ */
+watch(activeWork, async (v) => {
+  const opened = !!v
+  lockScroll(opened)
 
-watch(activeWork, (v) => {
-  lockScroll(!!v)
+  if (opened) {
+    window.addEventListener('keydown', onKeydown)
+    await nextTick()
+    closeBtnRef.value?.focus?.()
+  } else {
+    window.removeEventListener('keydown', onKeydown)
+  }
+})
+
+onBeforeUnmount(() => {
+  lockScroll(false)
+  window.removeEventListener('keydown', onKeydown)
 })
 </script>
 
@@ -243,23 +311,17 @@ watch(activeWork, (v) => {
 
       <!-- PC/Tablet：左右ボタン（SPは非表示） -->
       <div class="works__nav" aria-label="carousel controls">
-        <button class="works__arrow" type="button" @click="scrollByPage(-1)" aria-label="Previous">
-          ‹
-        </button>
-        <button class="works__arrow" type="button" @click="scrollByPage(1)" aria-label="Next">
-          ›
-        </button>
+        <button class="works__arrow" type="button" @click="scrollByPage(-1)" aria-label="Previous">‹</button>
+        <button class="works__arrow" type="button" @click="scrollByPage(1)" aria-label="Next">›</button>
       </div>
     </div>
 
     <!-- 横スクロール領域：SPは指でドラッグ、PCはボタンでも操作 -->
     <div class="works__track" ref="trackRef">
       <button v-for="w in WORKS" :key="w.id" type="button" class="workCard" @click="openWork(w)">
-        <!-- 背景：各カードの images[0] を使用 -->
-        <span class="workCard__bg" aria-hidden="true" :style="w.cover
-          ? { backgroundImage: `url(${w.cover})` }
-          : null" />
-
+        <!-- 背景（cover を使用） -->
+        <span class="workCard__bg" aria-hidden="true"
+          :style="w.cover ? { backgroundImage: `url(${w.cover})` } : null" />
 
         <span class="workCard__text">
           <span class="workCard__title">{{ w.title }}</span>
@@ -274,7 +336,7 @@ watch(activeWork, (v) => {
       <transition name="wm">
         <div v-if="activeWork" class="worksModal" role="dialog" aria-modal="true"
           :aria-labelledby="'work-title-' + activeWork.id" :aria-describedby="'work-desc-' + activeWork.id">
-          <div class="worksModal__backdrop" @click="closeWork" aria-hidden="true"></div>
+          <div class="worksModal__backdrop" @click="closeWork" aria-hidden="true" />
 
           <!-- panel はクリックで閉じない -->
           <div class="worksModal__panel" @click.stop>
@@ -317,13 +379,11 @@ watch(activeWork, (v) => {
                   </p>
                 </section>
 
-                <!-- 工夫した点・ポイント -->
+                <!-- ポイント -->
                 <section class="wmCard" v-if="activeWork.highlights?.length">
                   <h4 class="wmCard__title">ポイント</h4>
                   <ul class="wmList">
-                    <li v-for="(h, idx) in activeWork.highlights" :key="idx">
-                      {{ h }}
-                    </li>
+                    <li v-for="(h, idx) in activeWork.highlights" :key="idx">{{ h }}</li>
                   </ul>
                 </section>
 
@@ -331,9 +391,7 @@ watch(activeWork, (v) => {
                 <section class="wmCard" v-if="activeWork.tech?.length">
                   <h4 class="wmCard__title">使用技術</h4>
                   <div class="wmTags">
-                    <span class="wmTag" v-for="t in activeWork.tech" :key="t">
-                      {{ t }}
-                    </span>
+                    <span class="wmTag" v-for="t in activeWork.tech" :key="t">{{ t }}</span>
                   </div>
                 </section>
 
@@ -358,6 +416,7 @@ watch(activeWork, (v) => {
                   </div>
                 </section>
               </div>
+              <!-- /body -->
             </div>
           </div>
         </div>
@@ -367,15 +426,14 @@ watch(activeWork, (v) => {
 </template>
 
 <style scoped>
-/* =========================================
-   Works section（共通セクション枠）
-   ========================================= */
+/* =========================
+   Works
+   ========================= */
 .works {
   padding: 24px;
   border-radius: 20px;
 }
 
-/* Head */
 .works__head {
   display: flex;
   align-items: flex-end;
@@ -418,9 +476,9 @@ watch(activeWork, (v) => {
   transform: scale(0.96);
 }
 
-/* =========================================
+/* =========================
    Track（横スクロール + scroll-snap）
-   ========================================= */
+   ========================= */
 .works__track {
   display: flex;
   gap: 14px;
@@ -445,9 +503,9 @@ watch(activeWork, (v) => {
   background-clip: content-box;
 }
 
-/* =========================================
+/* =========================
    Card
-   ========================================= */
+   ========================= */
 .workCard {
   position: relative;
   isolation: isolate;
@@ -465,7 +523,6 @@ watch(activeWork, (v) => {
   height: 360px;
 
   scroll-snap-align: start;
-
   transition: transform 140ms ease;
 }
 
@@ -473,19 +530,16 @@ watch(activeWork, (v) => {
   transform: scale(0.99);
 }
 
-/* 写真背景に合わせて：暗いグラデで文字を読みやすく */
 .workCard::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom,
-      rgba(0, 0, 0, 0.12),
-      rgba(0, 0, 0, 0.65));
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.65));
   pointer-events: none;
 }
 
 .workCard::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -493,7 +547,7 @@ watch(activeWork, (v) => {
   pointer-events: none;
 }
 
-/* ✅ 背景：各カードの画像を表示（aurora背景は廃止） */
+/* 背景（cover） */
 .workCard__bg {
   position: absolute;
   inset: 0;
@@ -507,7 +561,7 @@ watch(activeWork, (v) => {
   filter: saturate(1.05) contrast(1.02);
 }
 
-/* 画像が無い場合のfallback */
+/* 画像が無い場合の fallback */
 .workCard__bg:not([style]) {
   background: linear-gradient(180deg, #050507, #0b0c10);
 }
@@ -563,13 +617,13 @@ watch(activeWork, (v) => {
   }
 
   .workCard:hover::after {
-    border-color: rgba(255, 255, 255, 0.20);
+    border-color: rgba(255, 255, 255, 0.2);
   }
 }
 
-/* =========================================
-   Popup（最適化）
-   ========================================= */
+/* =========================
+   Modal
+   ========================= */
 .worksModal {
   position: fixed;
   inset: 0;
@@ -611,10 +665,12 @@ watch(activeWork, (v) => {
   position: sticky;
   top: 0;
   z-index: 2;
+
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+
   padding: 24px 24px 20px;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(10px);
@@ -641,7 +697,7 @@ watch(activeWork, (v) => {
   width: 38px;
   height: 38px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.10);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   background: #f5f5f7;
 
   cursor: pointer;
@@ -665,6 +721,7 @@ watch(activeWork, (v) => {
   gap: 12px;
 }
 
+/* Cards */
 .wmCard {
   background: #f5f5f7;
   border: 1px solid rgba(0, 0, 0, 0.06);
@@ -761,13 +818,12 @@ watch(activeWork, (v) => {
 
   color: #1d1d1f;
   text-decoration: none;
-
   transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
 }
 
 .wmLink:hover {
   background: rgba(255, 255, 255, 0.92);
-  border-color: rgba(0, 0, 0, 0.10);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 .wmLink:active {
@@ -802,9 +858,9 @@ watch(activeWork, (v) => {
   display: block;
 }
 
-/* =========================================
+/* =========================
    Modal transition
-   ========================================= */
+   ========================= */
 .wm-enter-active,
 .wm-leave-active {
   transition: opacity 180ms ease;
@@ -820,19 +876,17 @@ watch(activeWork, (v) => {
   transition: transform 180ms ease, opacity 180ms ease;
 }
 
-.wm-enter-from .worksModal__content {
-  transform: translateY(8px) scale(0.99);
-  opacity: 0;
-}
-
+.wm-enter-from .worksModal__content,
 .wm-leave-to .worksModal__content {
   transform: translateY(8px) scale(0.99);
   opacity: 0;
 }
 
-/* =========================================
-   Responsive（SPのみ）
-   ========================================= */
+/* =========================
+   Breakpoints
+   ========================= */
+
+/* Small（スマホ寄り） */
 @media (max-width: 600px) {
   .workCard {
     flex: 0 0 78%;
@@ -858,10 +912,11 @@ watch(activeWork, (v) => {
   }
 }
 
+/* SP */
 @media (max-width: 480px) {
- .works{
-  padding: 0 8px;
- }
+  .works {
+    padding: 0 8px;
+  }
 }
 
 /* 動きが苦手な方向け */

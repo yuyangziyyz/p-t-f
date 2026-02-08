@@ -18,7 +18,7 @@
             :aria-label="`Copy ${item.label}`"
             @click="copy(item.copyText, item.id)"
           >
-            <img class="contact__copy-icon" src="/img/Copy-24.png" alt="" aria-hidden="true" />
+            <img class="contact__copy-icon" src="/img/copy.png" alt="" aria-hidden="true" />
           </button>
 
           <!-- コピー結果（簡易トースト） -->

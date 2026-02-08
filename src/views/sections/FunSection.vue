@@ -344,13 +344,14 @@ onBeforeUnmount(() => {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   border-radius: 999px;
   border: 0;
   padding: 0;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.6);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  color: rgb(46, 46, 46);
   cursor: pointer;
   z-index: 3;
   display: none;

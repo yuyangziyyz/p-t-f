@@ -158,10 +158,7 @@ const WORKS = [
     'シンプルで見やすいUIを意識した画面構成',
   ],
   tech: ['JavaScript', 'Weather API', 'HTML', 'CSS'],
-  links: [
-    // { label: 'Demo', href: 'https://example.com' },
-    // { label: 'GitHub', href: 'https://github.com/yourname/weather-app' },
-  ],
+  links: [{ label: 'Website', href: 'https://uyoko.com/weatherSearch/' }],
   images: [
     // { alt: '天気検索画面', src: '/img/works/weather-1.jpg' },
     // { alt: '天気結果表示', src: '/img/works/weather-2.jpg' },

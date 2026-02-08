@@ -178,7 +178,7 @@ function handleClick() {
    ========================= */
 @media (max-width: 480px) {
   .tab {
-    inline-size: clamp(82px, 44vw, 180px);
+    inline-size: clamp(82px, 26vw, 180px);
     min-height: 68px;
     padding: 9px 12px;
 

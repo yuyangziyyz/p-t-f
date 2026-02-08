@@ -6,7 +6,7 @@
     <div class="hero__grid">
       <!-- 写真 -->
       <div class="hero__photo">
-        <img src="/img/S__3391492.jpg" alt="My photo" />
+        <img src="/img/me.JPG" alt="My photo" />
       </div>
 
       <!-- プロフィール内容 -->
@@ -127,4 +127,11 @@
     margin: 0 auto;
   }
 }
+/* スマホ */
+@media (max-width: 480px) {
+ .hero{
+  padding: 0 8px;
+ }
+}
+
 </style>

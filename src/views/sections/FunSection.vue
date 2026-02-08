@@ -403,4 +403,11 @@ onBeforeUnmount(() => {
     grid-template-columns: 1fr;
   }
 }
+
+/* スマホ */
+@media (max-width: 480px) {
+ .fun{
+  padding: 0 8px;
+ }
+}
 </style>

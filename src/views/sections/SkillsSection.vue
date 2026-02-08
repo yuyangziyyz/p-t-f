@@ -324,4 +324,11 @@ const percentClass = computed(() => {
     --size: 220px;
   }
 }
+
+/* スマホ */
+@media (max-width: 480px) {
+ .skills{
+  padding: 0 8px;
+ }
+}
 </style>

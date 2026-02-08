@@ -429,6 +429,15 @@ function leave(el) {
     gap: 8px;
     padding: 8px 10px calc(10px + env(safe-area-inset-bottom));
   }
+  .dynamic{
+    padding: 0px;
+  }
+  .heroMedia.compact{
+    max-height: 64px;
+}
+.panel{
+  padding: 0;
+}
 }
 
 /* タブレット以上：基本は1行で */

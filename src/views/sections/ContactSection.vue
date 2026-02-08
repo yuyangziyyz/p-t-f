@@ -2,7 +2,6 @@
   <!-- Contact セクション -->
   <section class="contact" aria-label="Contact section">
     <h2 class="contact__title">Contact</h2>
-    <p class="contact__sub">Please contact me</p>
 
     <div class="contact__cards">
       <article v-for="item in CONTACTS" :key="item.id" class="contact__card">
@@ -100,15 +99,7 @@ async function copy(text, id) {
 .contact__title {
   font-size: 28px; /* H2 = 28px（base と統一） */
   font-weight: 700;
-  margin: 0 0 8px;
-}
-
-/* サブテキスト（本文扱い：12px） */
-.contact__sub {
-  margin: 0 0 18px;
-  font-size: 12px;
-  line-height: 1.7;
-  opacity: 0.8;
+  margin: 0 0 24px;
 }
 
 /* =========================================
@@ -216,5 +207,12 @@ async function copy(text, id) {
   .contact__value {
     font-size: 14px;
   }
+}
+
+/* スマホ */
+@media (max-width: 480px) {
+ .contact{
+  padding: 0 8px;
+ }
 }
 </style>
